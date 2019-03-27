@@ -69,6 +69,7 @@ function buildMetadata(sample) {
 }
 
 function buildCharts(sample) {
+    d3.select("#loaddiv").classed("loader", true);
     d3.json(`/samples/${sample}`).then((response) => {
         //Pie chart
         data1 = [{
@@ -76,6 +77,7 @@ function buildCharts(sample) {
             values: response['sample_values'].slice(0,10),
             text:response['otu_labels'].slice(0,10),
             hoverinfo:'text+percent',
+            textinfo: 'percent',
             type: 'pie'
         }];
         var layout1 = { 
@@ -83,6 +85,10 @@ function buildCharts(sample) {
             margin: { t: 0 }
         };
         Plotly.newPlot("pie", data1, layout1);
+        var pieDiv=document.getElementById("pie");
+        pieDiv.on('plotly_afterplot', function () {
+            d3.select("#loaddiv").classed("loader", false);
+        });
         
         //Bubble chart
         data2 = [{
@@ -128,6 +134,8 @@ function optionChanged(newSample) {
   buildCharts(newSample);
   buildMetadata(newSample);
 }
+
+
 
 // Initialize the dashboard
 init();
